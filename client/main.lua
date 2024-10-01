@@ -1,39 +1,39 @@
--- Main client-side file for cd_mdt
--- Purpose: Handle client-side MDT functionality and interaction with cd_dispatch
--- Documentation: See https://docs.codesign.pro/paid-scripts/dispatch
+-- Main client-side file for cd_mdt (now standalone)
+-- Purpose: Handle client-side MDT functionality and interaction with dispatch systems
 
 -- Function: Register and handle dispatch notifications on the MDT
 function RegisterDispatch(type, message)
-    -- Inline Comments: Trigger dispatch notification through cd_dispatch
+    -- Inline Comments: Trigger dispatch notification through the selected dispatch system
     local dispatchData = {
         type = type,
-        header = type .. ' in progress', -- Generate a generic header based on the type
+        header = type .. ' in progress',
         text = message,
-        code = Config.DispatchCodes[type] or 'Unknown Code', -- Use default if not configured
+        code = Config.DispatchCodes[type] or 'Unknown Code',
     }
 
-    -- Triggering cd_dispatch export
-    exports['cd_dispatch']:CustomDispatch(dispatchData)
+    -- Trigger the selected dispatch system (modular)
+    if Config.DispatchSystem == 'cd_dispatch' then
+        exports['cd_dispatch']:CustomDispatch(dispatchData)
+    elseif Config.DispatchSystem == 'another_dispatch' then
+        TriggerEvent('another_dispatch:SendDispatch', dispatchData)
+    else
+        TriggerEvent('standalone_dispatch:SendDispatch', dispatchData)
+    end
 
-    -- Debug print to show that the dispatch was successfully triggered
+    -- Debug print for checking dispatch
     if Config.Debug then
         print('MDT Dispatch Triggered: ' .. message)
     end
 end
 
--- Example: Function to handle status change via client-side
+-- Example: Function to handle officer status changes
 function UpdateOfficerStatus(status)
-    -- Check if the status is valid
     if Config.OfficerStatuses[status] then
-        -- Send the updated status to the server
         TriggerServerEvent('cd_mdt:UpdateOfficerStatus', status)
-
-        -- Debug print for checking status change
         if Config.Debug then
             print('Officer Status Changed to: ' .. status)
         end
     else
-        -- Invalid status debug print
         if Config.Debug then
             print('Invalid Officer Status: ' .. status)
         end
