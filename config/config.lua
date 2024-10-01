@@ -1,5 +1,8 @@
 Config = {}
 
+-- Select the dispatch system to use ('cd_dispatch', 'another_dispatch', or 'standalone')
+Config.DispatchSystem = 'cd_dispatch'  -- Default to cd_dispatch, but can be changed
+
 -- Dispatch code settings
 Config.DispatchCodes = {
     Robbery = '10-31',
@@ -9,8 +12,8 @@ Config.DispatchCodes = {
 }
 
 -- Debug settings
-Config.Debug = true -- Set to false to disable debug prints
-Config.DiscordWebhook = '' -- Discord webhook URL for error logging
+Config.Debug = true
+Config.DiscordWebhook = ''  -- Discord webhook URL for error logging
 
 -- Officer status settings
 Config.OfficerStatuses = {
@@ -21,6 +24,6 @@ Config.OfficerStatuses = {
 
 -- Optional webhook settings for logs
 Config.Webhooks = {
-    DispatchLog = '', -- Add the webhook URL for dispatch logs
-    ErrorLog = '',    -- Add the webhook URL for error logs
+    DispatchLog = '',  -- Add webhook for dispatch logs
+    ErrorLog = '',     -- Add webhook for error logs
 }
