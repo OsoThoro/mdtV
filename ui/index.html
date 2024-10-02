@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDT Interface</title>
+    <style>
+        /* Basic MDT layout */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2e2e2e;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .mdt-container {
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            padding: 20px;
+        }
+        .mdt-header {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .case-form {
+            margin-top: 20px;
+        }
+        .case-form input, .case-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mdt-container">
+        <div class="mdt-header">Mobile Dispatch Terminal (MDT)</div>
+        <form class="case-form">
+            <input type="text" id="officerName" placeholder="Officer Name">
+            <textarea id="caseDetails" placeholder="Case Details"></textarea>
+            <button type="button" onclick="submitCase()">Submit Case</button>
+        </form>
+    </div>
+
+    <script>
+        // Send data to the server from the MDT form
+        function submitCase() {
+            const officer = document.getElementById('officerName').value;
+            const details = document.getElementById('caseDetails').value;
+
+            fetch('https://mdtv/submitCase', {
+                method: 'POST',
+                body: JSON.stringify({ officer: officer, details: details }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Case submitted successfully!');
+                } else {
+                    alert('Failed to submit case.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
