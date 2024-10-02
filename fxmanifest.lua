@@ -2,25 +2,27 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'Thorough'
-description 'Standalone MDT'
-version '2.0.0'
+description 'Standalone MDT resource providing dispatch and other resource integration'
 lua54 'yes'
 
-shared_scripts {
-    'config/config.lua'
+server_scripts {
+    '@oxmysql/lib/MySQL.lua', -- Database connection
+    'server/main.lua'
 }
 
 client_scripts {
     'client/main.lua'
 }
 
-server_scripts {
-    'server/main.lua',
-    'server/discord_webhooks.lua',
-    'server/dispatch_handlers/cd_dispatch.lua',  -- Add this for cd_dispatch
-    -- Add more dispatch handlers as needed:
-    -- 'server/dispatch_handlers/another_dispatch.lua',
-    'server/dispatch_handlers/standalone_dispatch.lua'  -- Default fallback
+shared_scripts {
+    'shared/config.lua' -- Centralized configuration
 }
 
-repository 'https://github.com/OsoThoro/mdtV'
+files {
+    'ui/index.html', -- Placeholder for UI
+}
+
+dependencies {
+    'oxmysql', -- Optional dependency for database
+    'ox_inventory', -- Optional dependency for item management
+}
