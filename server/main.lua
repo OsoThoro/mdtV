@@ -1,43 +1,25 @@
--- Main server-side file for cd_mdt
--- Purpose: Handle MDT backend, officer status changes, and logging
--- Documentation: https://docs.codesign.pro/paid-scripts/dispatch
+-- MDTV Server Script
+-- Handles database queries and dispatch case processing
 
--- Officer status table to store statuses
-local OfficerStatus = {}
-
--- Function: Update officer status server-side
-RegisterNetEvent('cd_mdt:UpdateOfficerStatus')
-AddEventHandler('cd_mdt:UpdateOfficerStatus', function(status)
+-- Example query for logging a case in the MDT
+RegisterServerEvent('mdtv:logCase')
+AddEventHandler('mdtv:logCase', function(caseData)
     local _source = source
-    OfficerStatus[_source] = status
-
-    -- Debug print for officer status update
-    if Config.Debug then
-        print('[CD_MDT] Officer ' .. _source .. ' status updated to: ' .. status)
-    end
-
-    -- Log the status change to Discord (if webhook is set)
-    if Config.Webhooks.DispatchLog ~= '' then
-        TriggerEvent('cd_mdt:SendDiscordLog', Config.Webhooks.DispatchLog, 'Officer ' .. _source .. ' status updated to: ' .. status)
-    end
+    MySQL.insert('INSERT INTO mdtv_cases (officer, case_details, date) VALUES (?, ?, NOW())', 
+    { caseData.officer, caseData.details }, function(id)
+        if id then
+            print('Case logged successfully') -- Debug print
+            -- Trigger event for confirmation or UI feedback
+            TriggerClientEvent('mdtv:caseLogged', _source, true)
+        else
+            print('Failed to log case') -- Error debug
+            TriggerClientEvent('mdtv:caseLogged', _source, false)
+        end
+    end)
 end)
 
--- Debugging and error logging to Discord
-function SendDiscordLog(webhook, message)
-    PerformHttpRequest(webhook, function(err, text, headers) end, 'POST', json.encode({content = message}), { ['Content-Type'] = 'application/json' })
+-- Example function for dispatch logs (placeholder for further customization)
+function LogDispatch(action)
+    print('Dispatch action logged: ' .. action)
+    -- Implement logging logic here (e.g., Discord webhook)
 end
-
--- Check for errors and debug prints on server start
-AddEventHandler('onResourceStart', function(resource)
-    if GetCurrentResourceName() == resource then
-        -- Print server start success message
-        if Config.Debug then
-            print('[CD_MDT] Resource started successfully!')
-        end
-
-        -- Send a startup message to Discord (if webhook is set)
-        if Config.Webhooks.DispatchLog ~= '' then
-            SendDiscordLog(Config.Webhooks.DispatchLog, '[CD_MDT] Resource started successfully!')
-        end
-    end
-end)
